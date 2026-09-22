@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookmarklet Xuất TKB HCMUS sang Google Calendar</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 30px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .badge-uni {
+      display: inline-block;
+      background: rgba(2, 132, 199, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 2.1rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    p.lead {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 26px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      color: #38bdf8;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .drag-zone {
+      background: rgba(2, 132, 199, 0.08);
+      border: 2px dashed #0284c7;
+      border-radius: 14px;
+      padding: 30px 20px;
+      text-align: center;
+      margin: 18px 0;
+    }
+
+    .bm-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4);
+      cursor: grab;
+      user-select: none;
+      transition: all 0.2s;
+    }
+
+    .bm-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(2, 132, 199, 0.6);
+    }
+
+    .drag-tip {
+      margin-top: 14px;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: rgba(15, 23, 42, 0.5);
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .step-n {
+      background: #0284c7;
+      color: #fff;
+      font-weight: 700;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-c h3 {
+      font-size: 0.98rem;
+      font-weight: 600;
+      margin-bottom: 3px;
+      color: #f1f5f9;
+    }
+
+    .step-c p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .code-box {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 0.8rem;
+      color: #a5f3fc;
+      overflow-x: auto;
+      max-height: 110px;
+      word-break: break-all;
+      margin: 12px 0;
+    }
+
+    .btn-act {
+      background: #334155;
+      color: #fff;
+      border: 1px solid #475569;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-act:hover {
+      background: #475569;
+    }
+
+    .btn-test {
+      background: #10b981;
+      color: #fff;
+      border: none;
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-test:hover {
+      background: #059669;
+    }
+
+    .demo-tbl {
+      background: #ffffff;
+      color: #1e293b;
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 14px;
+      overflow-x: auto;
+    }
+
+    .demo-tbl table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    .demo-tbl th {
+      background: #e2e8f0;
+      padding: 7px 9px;
+      border: 1px solid #cbd5e1;
+    }
+
+    .demo-tbl td {
+      padding: 7px 9px;
+      border: 1px solid #e2e8f0;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge-uni">TRƯỜNG ĐH KHOA HỌC TỰ NHIÊN ĐHQG-HCM</div>
+      <h1>Xuất TKB sang Google Calendar</h1>
+      <p class="lead">Bookmarklet thông minh tự động đọc bảng kết quả ĐKHP trên <code>portal.ctdb.hcmus.edu.vn</code> và
+        xuất ra file lịch <code>.ics</code> với đầy đủ chu kỳ lặp lại 15 tuần & thông báo nhắc giờ.</p>
+    </header>
+
+    <!-- Cách 1: Kéo thả -->
+    <div class="card">
+      <h2>🎯 Cách 1: Kéo nút vào Bookmark Bar (Khuyên dùng)</h2>
+      <p style="color: var(--text-muted);">Bật thanh Bookmark của trình duyệt bằng tổ hợp phím
+        <code>Ctrl + Shift + B</code> (hoặc <code>Cmd + Shift + B</code> trên Mac), sau đó kéo nút bên dưới lên thanh
+        Bookmark:
+      </p>
+
+      <div class="drag-zone">
+        <a class="bm-btn" id="bm-link" href="#">📅 Xuất TKB HCMUS</a>
+        <div class="drag-tip">
+          👆 <b>Nhấn giữ chuột vào nút trên và kéo thả vào thanh Bookmark</b>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cách 2: Thủ công -->
+    <div class="card">
+      <h2>📋 Cách 2: Thêm thủ công vào Bookmark</h2>
+      <p style="color: var(--text-muted);">Nếu không kéo thả được, hãy sao chép mã bên dưới và tạo bookmark thủ công:
+      </p>
+
+      <div class="code-box" id="bm-code-box"></div>
+
+      <button class="btn-act" id="btn-copy-bm">
+        📋 Sao chép mã Bookmarklet
+      </button>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-c">
+            <h3>Tạo Bookmark mới</h3>
+            <p>Nhấn <code>Ctrl + D</code> trên trình duyệt bất kỳ rồi bấm nút <b>Chỉnh sửa (Edit)</b>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-c">
+            <h3>Dán mã vào ô URL</h3>
+            <p>Đặt tên là <b>📅 Xuất TKB HCMUS</b> và dán toàn bộ đoạn mã vừa copy vào ô <b>URL</b> rồi bấm <b>Lưu</b>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hướng dẫn sử dụng -->
+    <div class="card">
+      <h2>🚀 Cách sử dụng trên Portal HCMUS</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-c">
+            <h3>Mở trang kết quả ĐKHP</h3>
+            <p>Vào trang: <a href="https://portal.ctdb.hcmus.edu.vn/sinh-vien/ket-qua-dkhp" target="_blank"
+                style="color:#38bdf8;">https://portal.ctdb.hcmus.edu.vn/sinh-vien/ket-qua-dkhp</a></p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-c">
+            <h3>Bấm vào Bookmarklet</h3>
+            <p>Bấm vào dấu trang <b>📅 Xuất TKB HCMUS</b> trên thanh công cụ. Một cửa sổ modal hiện đại sẽ hiện lên với
+              tất cả các môn đã đăng ký.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-c">
+            <h3>Chọn ngày bắt đầu & Tải file .ICS</h3>
+            <p>Chọn ngày Thứ Hai tuần 1 (bắt đầu kỳ), số tuần học (mặc định 15 tuần) và bấm <b>📥 Tải file .ICS</b>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <div class="step-c">
+            <h3>Nhập vào Google Calendar</h3>
+            <p>Bấm <b>🌐 Mở Google Calendar Import</b>, tải file <code>.ics</code> lên và chọn lịch của bạn. Xong ngay
+              trong tích tắc!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <footer>
+      Phát triển hỗ trợ sinh viên Chương trình Đặc biệt / Đề án Trường ĐH Khoa học Tự nhiên ĐHQG-HCM
+    </footer>
+  </div>
+
+  <script>
+    var bmUri = "javascript:(function%20()%20%7B%20'use%20strict'%3B%20var%20MODAL_ID%20%3D%20'hcmus-gcal-exporter-modal'%3B%20var%20oldModal%20%3D%20document.getElementById(MODAL_ID)%3B%20if%20(oldModal)%20%7B%20oldModal.remove()%3B%20%7D%20function%20getStudentInfo()%20%7B%20var%20text%20%3D%20document.body.innerText%3B%20var%20match%20%3D%20text.match(%2F%5Cb(%5Cd%7B7%2C10%7D)%5Cs*%5B-%E2%80%93%3A%5D%5Cs*(%5BA-Z%C3%80-%E1%BB%B8%5Cs%5D%7B3%2C40%7D)%5Cb%2Fu)%3B%20if%20(match)%20%7B%20return%20%7B%20id%3A%20match%5B1%5D.trim()%2C%20name%3A%20match%5B2%5D.trim()%2C%20full%3A%20match%5B1%5D.trim()%20%2B%20'%20-%20'%20%2B%20match%5B2%5D.trim()%20%7D%3B%20%7D%20return%20%7B%20id%3A%20''%2C%20name%3A%20''%2C%20full%3A%20''%20%7D%3B%20%7D%20function%20findCourseTable()%20%7B%20var%20tables%20%3D%20Array.from(document.querySelectorAll('table'))%3B%20for%20(var%20i%20%3D%200%3B%20i%20%3C%20tables.length%3B%20i%2B%2B)%20%7B%20var%20txt%20%3D%20tables%5Bi%5D.innerText%3B%20if%20((txt.indexOf('M%C3%A3%20MH')%20%3E%3D%200%20%7C%7C%20txt.indexOf('M%C3%A3%20m%C3%B4n')%20%3E%3D%200)%20%26%26%20(txt.indexOf('L%E1%BB%8Bch%20LT')%20%3E%3D%200%20%7C%7C%20txt.indexOf('L%E1%BB%8Bch%20TH')%20%3E%3D%200%20%7C%7C%20txt.indexOf('L%E1%BB%9Bp%20HP')%20%3E%3D%200))%20%7B%20return%20tables%5Bi%5D%3B%20%7D%20%7D%20return%20null%3B%20%7D%20function%20parseSchedule(text)%20%7B%20if%20(!text%20%7C%7C%20typeof%20text%20!%3D%3D%20'string')%20return%20%5B%5D%3B%20var%20clean%20%3D%20text.replace(%2F%3Cbr%5Cs*%5C%2F%3F%3E%2Fgi%2C%20'%5Cn')%3B%20var%20regex%20%3D%20%2F(%3F%3A(T%5B2-7%5D%7CTh%E1%BB%A9%5Cs*%5B2-7%5D%7CTh%E1%BB%A9%5Cs*(%3F%3AHai%7CBa%7CT%C6%B0%7CB%E1%BB%91n%7CN%C4%83m%7CS%C3%A1u%7CB%E1%BA%A3y)%7CCN%7CCh%E1%BB%A7%5Cs*nh%E1%BA%ADt))%5Cs*%5B%3A%5C-%5Cs%5D%3F%5Cs*(%5Cd%7B1%2C2%7D)%5Bh%3A%5D(%5Cd%7B2%7D)%5Cs*%5B-%E2%80%93%E2%80%94~%C4%91%E1%BA%BFn%5Cs%5D%2B%5Cs*(%5Cd%7B1%2C2%7D)%5Bh%3A%5D(%5Cd%7B2%7D)(%3F%3A%5B%5E%5Cn%5Cr%2C%3B%5D*%3F(%3F%3A%5B%5C(%5C%5B%5D%5Cs*(%5B%5E()%5C%5B%5C%5D%5D%2B)%5Cs*%5B%5C)%5C%5D%5D%7C%5B-%E2%80%93%E2%80%94%3A%5D%5Cs*(%5BA-Za-z0-9%5C.%5C-_%5D%2B)%7C%5Cb(%3F%3Aph%C3%B2ng%7Cp%5C.%3F)%5Cs*(%5BA-Za-z0-9%5C.%5C-_%5D%2B)))%3F%2Fgi%3B%20var%20res%20%3D%20%5B%5D%3B%20var%20m%3B%20while%20((m%20%3D%20regex.exec(clean))%20!%3D%3D%20null)%20%7B%20var%20rawDay%20%3D%20m%5B1%5D%3B%20var%20startH%20%3D%20m%5B2%5D.padStart(2%2C%20'0')%3B%20var%20startM%20%3D%20m%5B3%5D%3B%20var%20endH%20%3D%20m%5B4%5D.padStart(2%2C%20'0')%3B%20var%20endM%20%3D%20m%5B5%5D%3B%20var%20room%20%3D%20(m%5B6%5D%20%7C%7C%20m%5B7%5D%20%7C%7C%20m%5B8%5D%20%7C%7C%20'').trim()%3B%20var%20dow%20%3D%201%3B%20var%20dLower%20%3D%20rawDay.toLowerCase().replace(%2F%5Cs%2B%2Fg%2C%20'')%3B%20if%20(dLower.indexOf('2')%20%3E%3D%200%20%7C%7C%20dLower.indexOf('hai')%20%3E%3D%200)%20dow%20%3D%201%3B%20else%20if%20(dLower.indexOf('3')%20%3E%3D%200%20%7C%7C%20dLower.indexOf('ba')%20%3E%3D%200)%20dow%20%3D%202%3B%20else%20if%20(dLower.indexOf('4')%20%3E%3D%200%20%7C%7C%20dLower.indexOf('t%C6%B0')%20%3E%3D%200%20%7C%7C%20dLower.indexOf('b%E1%BB%91n')%20%3E%3D%200)%20dow%20%3D%203%3B%20else%20if%20(dLower.indexOf('5')%20%3E%3D%200%20%7C%7C%20dLower.indexOf('n%C4%83m')%20%3E%3D%200)%20dow%20%3D%204%3B%20else%20if%20(dLower.indexOf('6')%20%3E%3D%200%20%7C%7C%20dLower.indexOf('s%C3%A1u')%20%3E%3D%200)%20dow%20%3D%205%3B%20else%20if%20(dLower.indexOf('7')%20%3E%3D%200%20%7C%7C%20dLower.indexOf('b%E1%BA%A3y')%20%3E%3D%200)%20dow%20%3D%206%3B%20else%20if%20(dLower.indexOf('cn')%20%3E%3D%200%20%7C%7C%20dLower.indexOf('ch%E1%BB%A7')%20%3E%3D%200%20%7C%7C%20dLower.indexOf('chu')%20%3E%3D%200)%20dow%20%3D%200%3B%20var%20offset%20%3D%20dow%20%3D%3D%3D%200%20%3F%206%20%3A%20dow%20-%201%3B%20res.push(%7B%20rawDay%3A%20rawDay%2C%20dow%3A%20dow%2C%20offset%3A%20offset%2C%20startTime%3A%20startH%20%2B%20'%3A'%20%2B%20startM%2C%20endTime%3A%20endH%20%2B%20'%3A'%20%2B%20endM%2C%20room%3A%20room%20%7D)%3B%20%7D%20return%20res%3B%20%7D%20function%20extractCourses(table)%20%7B%20var%20trs%20%3D%20Array.from(table.querySelectorAll('tr'))%3B%20var%20headerRow%20%3D%20null%3B%20for%20(var%20i%20%3D%200%3B%20i%20%3C%20trs.length%3B%20i%2B%2B)%20%7B%20var%20txt%20%3D%20trs%5Bi%5D.innerText%3B%20if%20(txt.indexOf('M%C3%A3%20MH')%20%3E%3D%200%20%7C%7C%20txt.indexOf('T%C3%AAn%20MH')%20%3E%3D%200)%20%7B%20headerRow%20%3D%20trs%5Bi%5D%3B%20break%3B%20%7D%20%7D%20var%20col%20%3D%20%7B%20code%3A%201%2C%20name%3A%202%2C%20credits%3A%203%2C%20classCode%3A%204%2C%20sem%3A%205%2C%20lt%3A%209%2C%20th%3A%2010%2C%20gvLt%3A%2011%2C%20gvTh%3A%2012%20%7D%3B%20if%20(headerRow)%20%7B%20Array.from(headerRow.querySelectorAll('th%2C%20td')).forEach(function%20(c%2C%20idx)%20%7B%20var%20t%20%3D%20c.innerText.trim().toLowerCase()%3B%20if%20(t.indexOf('m%C3%A3%20mh')%20%3E%3D%200%20%7C%7C%20t.indexOf('m%C3%A3%20m%C3%B4n')%20%3E%3D%200)%20col.code%20%3D%20idx%3B%20else%20if%20(t.indexOf('t%C3%AAn%20mh')%20%3E%3D%200%20%7C%7C%20t.indexOf('t%C3%AAn%20m%C3%B4n')%20%3E%3D%200)%20col.name%20%3D%20idx%3B%20else%20if%20(t%20%3D%3D%3D%20'tc'%20%7C%7C%20t.indexOf('t%C3%ADn%20ch%E1%BB%89')%20%3E%3D%200)%20col.credits%20%3D%20idx%3B%20else%20if%20(t.indexOf('l%E1%BB%9Bp%20hp')%20%3E%3D%200%20%7C%7C%20t.indexOf('l%E1%BB%9Bp')%20%3E%3D%200)%20col.classCode%20%3D%20idx%3B%20else%20if%20(t.indexOf('h%E1%BB%8Dc%20k%E1%BB%B3')%20%3E%3D%200%20%7C%7C%20t.indexOf('h%E1%BB%8Dc%20k%C3%AC')%20%3E%3D%200)%20col.sem%20%3D%20idx%3B%20else%20if%20(t.indexOf('l%E1%BB%8Bch%20lt')%20%3E%3D%200%20%7C%7C%20t.indexOf('l%C3%BD%20thuy%E1%BA%BFt')%20%3E%3D%200)%20col.lt%20%3D%20idx%3B%20else%20if%20(t.indexOf('l%E1%BB%8Bch%20th')%20%3E%3D%200%20%7C%7C%20t.indexOf('th%E1%BB%B1c%20h%C3%A0nh')%20%3E%3D%200)%20col.th%20%3D%20idx%3B%20else%20if%20(t.indexOf('gv-lt')%20%3E%3D%200%20%7C%7C%20t.indexOf('gv%20lt')%20%3E%3D%200)%20col.gvLt%20%3D%20idx%3B%20else%20if%20(t.indexOf('gv-th')%20%3E%3D%200%20%7C%7C%20t.indexOf('gv%20th')%20%3E%3D%200)%20col.gvTh%20%3D%20idx%3B%20%7D)%3B%20%7D%20var%20list%20%3D%20%5B%5D%3B%20var%20start%20%3D%20headerRow%20%3F%20trs.indexOf(headerRow)%20%2B%201%20%3A%201%3B%20for%20(var%20r%20%3D%20start%3B%20r%20%3C%20trs.length%3B%20r%2B%2B)%20%7B%20var%20cells%20%3D%20Array.from(trs%5Br%5D.querySelectorAll('td%2C%20th'))%3B%20if%20(cells.length%20%3C%205)%20continue%3B%20var%20getVal%20%3D%20function%20(idx)%20%7B%20return%20(idx%20%3E%3D%200%20%26%26%20cells%5Bidx%5D)%20%3F%20cells%5Bidx%5D.innerText.trim()%20%3A%20''%3B%20%7D%3B%20var%20code%20%3D%20getVal(col.code)%3B%20var%20name%20%3D%20getVal(col.name)%3B%20if%20(!code%20%26%26%20!name)%20continue%3B%20var%20credits%20%3D%20getVal(col.credits)%3B%20var%20classCode%20%3D%20getVal(col.classCode)%3B%20var%20sem%20%3D%20getVal(col.sem)%3B%20var%20ltRaw%20%3D%20getVal(col.lt)%3B%20var%20thRaw%20%3D%20getVal(col.th)%3B%20var%20gvLt%20%3D%20getVal(col.gvLt)%3B%20var%20gvTh%20%3D%20getVal(col.gvTh)%3B%20var%20lt%20%3D%20parseSchedule(ltRaw)%3B%20var%20th%20%3D%20parseSchedule(thRaw)%3B%20if%20(lt.length%20%3E%200%20%7C%7C%20th.length%20%3E%200%20%7C%7C%20name)%20%7B%20list.push(%7B%20id%3A%20'c_'%20%2B%20r%2C%20code%3A%20code%2C%20name%3A%20name%2C%20credits%3A%20credits%2C%20classCode%3A%20classCode%2C%20sem%3A%20sem%2C%20gvLt%3A%20gvLt%2C%20gvTh%3A%20gvTh%2C%20lt%3A%20lt%2C%20th%3A%20th%2C%20selected%3A%20true%20%7D)%3B%20%7D%20%7D%20return%20list%3B%20%7D%20function%20getDefaultMonday()%20%7B%20var%20d%20%3D%20new%20Date()%3B%20var%20day%20%3D%20d.getDay()%3B%20var%20diff%20%3D%20(day%20%3D%3D%3D%200%20%3F%20-6%20%3A%201)%20-%20day%3B%20d.setDate(d.getDate()%20%2B%20diff)%3B%20return%20d.toISOString().split('T')%5B0%5D%3B%20%7D%20function%20makeICS(courses%2C%20startStr%2C%20weeks%2C%20alarmMins%2C%20student)%20%7B%20var%20parts%20%3D%20startStr.split('-').map(Number)%3B%20var%20baseMon%20%3D%20new%20Date(parts%5B0%5D%2C%20parts%5B1%5D%20-%201%2C%20parts%5B2%5D)%3B%20var%20pad%20%3D%20function%20(n)%20%7B%20return%20String(n).padStart(2%2C%20'0')%3B%20%7D%3B%20var%20now%20%3D%20new%20Date()%3B%20var%20dtstamp%20%3D%20now.getUTCFullYear()%20%2B%20pad(now.getUTCMonth()%20%2B%201)%20%2B%20pad(now.getUTCDate())%20%2B%20'T'%20%2B%20pad(now.getUTCHours())%20%2B%20pad(now.getUTCMinutes())%20%2B%20pad(now.getUTCSeconds())%20%2B%20'Z'%3B%20var%20calName%20%3D%20(student%20%26%26%20student.full)%20%3F%20('TKB%20HCMUS%20-%20'%20%2B%20student.full)%20%3A%20'Th%E1%BB%9Di%20kh%C3%B3a%20bi%E1%BB%83u%20HCMUS'%3B%20var%20lines%20%3D%20%5B%20'BEGIN%3AVCALENDAR'%2C%20'VERSION%3A2.0'%2C%20'PRODID%3A-%2F%2FHCMUS%20CTDB%2F%2FSchedule%20to%20Google%20Calendar%2F%2FVI'%2C%20'CALSCALE%3AGREGORIAN'%2C%20'METHOD%3APUBLISH'%2C%20'X-WR-CALNAME%3A'%20%2B%20calName%2C%20'X-WR-TIMEZONE%3AAsia%2FHo_Chi_Minh'%2C%20'BEGIN%3AVTIMEZONE'%2C%20'TZID%3AAsia%2FHo_Chi_Minh'%2C%20'X-LIC-LOCATION%3AAsia%2FHo_Chi_Minh'%2C%20'BEGIN%3ASTANDARD'%2C%20'TZOFFSETFROM%3A%2B0700'%2C%20'TZOFFSETTO%3A%2B0700'%2C%20'TZNAME%3A%2B07'%2C%20'DTSTART%3A19700101T000000'%2C%20'END%3ASTANDARD'%2C%20'END%3AVTIMEZONE'%20%5D%3B%20var%20evCount%20%3D%200%3B%20courses.filter(function%20(c)%20%7B%20return%20c.selected%3B%20%7D).forEach(function%20(course)%20%7B%20var%20sessions%20%3D%20%5B%5D%3B%20course.lt.forEach(function%20(s)%20%7B%20sessions.push(Object.assign(%7B%7D%2C%20s%2C%20%7B%20typeName%3A%20'L%C3%BD%20thuy%E1%BA%BFt'%2C%20pfx%3A%20'%5BLT%5D'%2C%20teacher%3A%20course.gvLt%20%7D))%3B%20%7D)%3B%20course.th.forEach(function%20(s)%20%7B%20sessions.push(Object.assign(%7B%7D%2C%20s%2C%20%7B%20typeName%3A%20'Th%E1%BB%B1c%20h%C3%A0nh'%2C%20pfx%3A%20'%5BTH%5D'%2C%20teacher%3A%20course.gvTh%20%7D))%3B%20%7D)%3B%20sessions.forEach(function%20(s)%20%7B%20evCount%2B%2B%3B%20var%20sDate%20%3D%20new%20Date(baseMon)%3B%20sDate.setDate(baseMon.getDate()%20%2B%20s.offset)%3B%20var%20shm%20%3D%20s.startTime.split('%3A').map(Number)%3B%20var%20ehm%20%3D%20s.endTime.split('%3A').map(Number)%3B%20var%20sDt%20%3D%20new%20Date(sDate)%3B%20sDt.setHours(shm%5B0%5D%2C%20shm%5B1%5D%2C%200%2C%200)%3B%20var%20eDt%20%3D%20new%20Date(sDate)%3B%20eDt.setHours(ehm%5B0%5D%2C%20ehm%5B1%5D%2C%200%2C%200)%3B%20var%20sStr%20%3D%20sDt.getFullYear()%20%2B%20pad(sDt.getMonth()%20%2B%201)%20%2B%20pad(sDt.getDate())%20%2B%20'T'%20%2B%20pad(sDt.getHours())%20%2B%20pad(sDt.getMinutes())%20%2B%20'00'%3B%20var%20eStr%20%3D%20eDt.getFullYear()%20%2B%20pad(eDt.getMonth()%20%2B%201)%20%2B%20pad(eDt.getDate())%20%2B%20'T'%20%2B%20pad(eDt.getHours())%20%2B%20pad(eDt.getMinutes())%20%2B%20'00'%3B%20var%20summary%20%3D%20s.pfx%20%2B%20'%20'%20%2B%20course.name%20%2B%20'%20-%20'%20%2B%20course.classCode%3B%20var%20loc%20%3D%20s.room%20%3F%20('Ph%C3%B2ng%20'%20%2B%20s.room%20%2B%20'%2C%20HCMUS')%20%3A%20'%C4%90H%20Khoa%20h%E1%BB%8Dc%20T%E1%BB%B1%20nhi%C3%AAn%20%C4%90HQG-HCM'%3B%20var%20desc%20%3D%20'M%C3%B4n%20h%E1%BB%8Dc%3A%20'%20%2B%20course.name%20%2B%20'%5C%5CnM%C3%A3%20m%C3%B4n%3A%20'%20%2B%20course.code%20%2B%20'%5C%5CnL%E1%BB%9Bp%20HP%3A%20'%20%2B%20course.classCode%20%2B%20'%5C%5CnLo%E1%BA%A1i%20l%E1%BB%9Bp%3A%20'%20%2B%20s.typeName%3B%20if%20(course.credits)%20desc%20%2B%3D%20'%5C%5CnS%E1%BB%91%20t%C3%ADn%20ch%E1%BB%89%3A%20'%20%2B%20course.credits%3B%20if%20(course.sem)%20desc%20%2B%3D%20'%5C%5CnH%E1%BB%8Dc%20k%E1%BB%B3%3A%20'%20%2B%20course.sem%3B%20if%20(s.teacher)%20desc%20%2B%3D%20'%5C%5CnGi%E1%BA%A3ng%20vi%C3%AAn%3A%20'%20%2B%20s.teacher%3B%20if%20(s.room)%20desc%20%2B%3D%20'%5C%5CnPh%C3%B2ng%20h%E1%BB%8Dc%3A%20'%20%2B%20s.room%3B%20if%20(student%20%26%26%20student.full)%20desc%20%2B%3D%20'%5C%5CnSinh%20vi%C3%AAn%3A%20'%20%2B%20student.full%3B%20desc%20%2B%3D%20'%5C%5CnNgu%E1%BB%93n%3A%20portal.ctdb.hcmus.edu.vn'%3B%20var%20uid%20%3D%20'hcmus-'%20%2B%20(course.code%20%7C%7C%20'mh')%20%2B%20'-'%20%2B%20s.pfx.replace(%2F%5B%5EA-Z%5D%2Fg%2C%20'')%20%2B%20'-'%20%2B%20s.dow%20%2B%20'-'%20%2B%20evCount%20%2B%20'-'%20%2B%20Date.now()%20%2B%20'%40ctdb.hcmus.edu.vn'%3B%20lines.push('BEGIN%3AVEVENT')%3B%20lines.push('UID%3A'%20%2B%20uid)%3B%20lines.push('DTSTAMP%3A'%20%2B%20dtstamp)%3B%20lines.push('DTSTART%3BTZID%3DAsia%2FHo_Chi_Minh%3A'%20%2B%20sStr)%3B%20lines.push('DTEND%3BTZID%3DAsia%2FHo_Chi_Minh%3A'%20%2B%20eStr)%3B%20lines.push('RRULE%3AFREQ%3DWEEKLY%3BCOUNT%3D'%20%2B%20weeks)%3B%20lines.push('SUMMARY%3A'%20%2B%20summary)%3B%20lines.push('LOCATION%3A'%20%2B%20loc)%3B%20lines.push('DESCRIPTION%3A'%20%2B%20desc)%3B%20lines.push('STATUS%3ACONFIRMED')%3B%20lines.push('TRANSP%3AOPAQUE')%3B%20if%20(alarmMins%20%3E%200)%20%7B%20lines.push('BEGIN%3AVALARM')%3B%20lines.push('ACTION%3ADISPLAY')%3B%20lines.push('DESCRIPTION%3ANh%E1%BA%AFc%20nh%E1%BB%9F%3A%20S%E1%BA%AFp%20t%E1%BB%9Bi%20gi%E1%BB%9D%20h%E1%BB%8Dc%20'%20%2B%20course.name)%3B%20lines.push('TRIGGER%3A-PT'%20%2B%20alarmMins%20%2B%20'M')%3B%20lines.push('END%3AVALARM')%3B%20%7D%20lines.push('END%3AVEVENT')%3B%20%7D)%3B%20%7D)%3B%20lines.push('END%3AVCALENDAR')%3B%20return%20%7B%20content%3A%20lines.join('%5Cr%5Cn')%2C%20count%3A%20evCount%20%7D%3B%20%7D%20function%20makeGCalUrl(course%2C%20s%2C%20startStr%2C%20weeks)%20%7B%20var%20parts%20%3D%20startStr.split('-').map(Number)%3B%20var%20baseMon%20%3D%20new%20Date(parts%5B0%5D%2C%20parts%5B1%5D%20-%201%2C%20parts%5B2%5D)%3B%20var%20sDate%20%3D%20new%20Date(baseMon)%3B%20sDate.setDate(baseMon.getDate()%20%2B%20s.offset)%3B%20var%20pad%20%3D%20function%20(n)%20%7B%20return%20String(n).padStart(2%2C%20'0')%3B%20%7D%3B%20var%20shm%20%3D%20s.startTime.split('%3A').map(Number)%3B%20var%20ehm%20%3D%20s.endTime.split('%3A').map(Number)%3B%20var%20sDt%20%3D%20new%20Date(sDate)%3B%20sDt.setHours(shm%5B0%5D%2C%20shm%5B1%5D%2C%200%2C%200)%3B%20var%20eDt%20%3D%20new%20Date(sDate)%3B%20eDt.setHours(ehm%5B0%5D%2C%20ehm%5B1%5D%2C%200%2C%200)%3B%20var%20sStr%20%3D%20sDt.getFullYear()%20%2B%20pad(sDt.getMonth()%20%2B%201)%20%2B%20pad(sDt.getDate())%20%2B%20'T'%20%2B%20pad(sDt.getHours())%20%2B%20pad(sDt.getMinutes())%20%2B%20'00'%3B%20var%20eStr%20%3D%20eDt.getFullYear()%20%2B%20pad(eDt.getMonth()%20%2B%201)%20%2B%20pad(eDt.getDate())%20%2B%20'T'%20%2B%20pad(eDt.getHours())%20%2B%20pad(eDt.getMinutes())%20%2B%20'00'%3B%20var%20title%20%3D%20s.pfx%20%2B%20'%20'%20%2B%20course.name%20%2B%20'%20-%20'%20%2B%20course.classCode%3B%20var%20loc%20%3D%20s.room%20%3F%20('Ph%C3%B2ng%20'%20%2B%20s.room%20%2B%20'%2C%20HCMUS')%20%3A%20'%C4%90H%20Khoa%20h%E1%BB%8Dc%20T%E1%BB%B1%20nhi%C3%AAn%20%C4%90HQG-HCM'%3B%20var%20desc%20%3D%20'M%C3%A3%20MH%3A%20'%20%2B%20course.code%20%2B%20'%20%7C%20L%E1%BB%9Bp%3A%20'%20%2B%20course.classCode%20%2B%20'%20%7C%20Lo%E1%BA%A1i%3A%20'%20%2B%20s.typeName%3B%20var%20u%20%3D%20new%20URL('https%3A%2F%2Fcalendar.google.com%2Fcalendar%2Frender')%3B%20u.searchParams.set('action'%2C%20'TEMPLATE')%3B%20u.searchParams.set('text'%2C%20title)%3B%20u.searchParams.set('dates'%2C%20sStr%20%2B%20'%2F'%20%2B%20eStr)%3B%20u.searchParams.set('details'%2C%20desc)%3B%20u.searchParams.set('location'%2C%20loc)%3B%20u.searchParams.set('recur'%2C%20'RRULE%3AFREQ%3DWEEKLY%3BCOUNT%3D'%20%2B%20weeks)%3B%20u.searchParams.set('ctz'%2C%20'Asia%2FHo_Chi_Minh')%3B%20return%20u.toString()%3B%20%7D%20var%20student%20%3D%20getStudentInfo()%3B%20var%20table%20%3D%20findCourseTable()%3B%20if%20(!table)%20%7B%20alert('%E2%9D%8C%20Kh%C3%B4ng%20t%C3%ACm%20th%E1%BA%A5y%20b%E1%BA%A3ng%20k%E1%BA%BFt%20qu%E1%BA%A3%20%C4%90KHP%20tr%C3%AAn%20trang%20n%C3%A0y!%5Cn%5CnVui%20l%C3%B2ng%20ki%E1%BB%83m%20tra%20l%E1%BA%A1i%20b%E1%BA%A1n%20%C4%91ang%20%E1%BB%9F%20trang%3A%5Cnhttps%3A%2F%2Fportal.ctdb.hcmus.edu.vn%2Fsinh-vien%2Fket-qua-dkhp')%3B%20return%3B%20%7D%20var%20courses%20%3D%20extractCourses(table)%3B%20if%20(courses.length%20%3D%3D%3D%200)%20%7B%20alert('%E2%9A%A0%EF%B8%8F%20%C4%90%C3%A3%20t%C3%ACm%20th%E1%BA%A5y%20b%E1%BA%A3ng%20nh%C6%B0ng%20kh%C3%B4ng%20ph%C3%A1t%20hi%E1%BB%87n%20m%C3%B4n%20h%E1%BB%8Dc%20n%C3%A0o%20%C4%91%C6%B0%E1%BB%A3c%20%C4%91%C4%83ng%20k%C3%BD.')%3B%20return%3B%20%7D%20var%20defMon%20%3D%20getDefaultMonday()%3B%20var%20modal%20%3D%20document.createElement('div')%3B%20modal.id%20%3D%20MODAL_ID%3B%20var%20styleStr%20%3D%20'%23'%20%2B%20MODAL_ID%20%2B%20'%7Bposition%3Afixed%3Binset%3A0%3Bz-index%3A999999%3Bbackground%3Argba(15%2C23%2C42%2C0.65)%3Bbackdrop-filter%3Ablur(4px)%3Bdisplay%3Aflex%3Balign-items%3Acenter%3Bjustify-content%3Acenter%3Bfont-family%3A-apple-system%2CBlinkMacSystemFont%2C%22Segoe%20UI%22%2CRoboto%2Csans-serif%3Bcolor%3A%231e293b%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20*%7Bbox-sizing%3Aborder-box%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.box%7Bbackground%3A%23fff%3Bwidth%3A94%25%3Bmax-width%3A860px%3Bmax-height%3A90vh%3Bborder-radius%3A16px%3Bbox-shadow%3A0%2025px%2050px%20-12px%20rgba(0%2C0%2C0%2C0.35)%3Bdisplay%3Aflex%3Bflex-direction%3Acolumn%3Boverflow%3Ahidden%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.hdr%7Bbackground%3Alinear-gradient(135deg%2C%230f4c81%2C%230284c7)%3Bcolor%3A%23fff%3Bpadding%3A16px%2022px%3Bdisplay%3Aflex%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.hdr%20h2%7Bmargin%3A0%3Bfont-size%3A1.2rem%3Bfont-weight%3A700%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.hdr%20.sub%7Bfont-size%3A0.84rem%3Bopacity%3A0.9%3Bmargin-top%3A3px%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.btn-x%7Bbackground%3Argba(255%2C255%2C255%2C0.2)%3Bborder%3Anone%3Bcolor%3A%23fff%3Bwidth%3A32px%3Bheight%3A32px%3Bborder-radius%3A50%25%3Bfont-size%3A1.1rem%3Bcursor%3Apointer%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.btn-x%3Ahover%7Bbackground%3Argba(255%2C255%2C255%2C0.35)%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.bdy%7Bpadding%3A18px%2022px%3Boverflow-y%3Aauto%3Bflex%3A1%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.grid%7Bdisplay%3Agrid%3Bgrid-template-columns%3Arepeat(auto-fit%2Cminmax(190px%2C1fr))%3Bgap%3A12px%3Bbackground%3A%23f8fafc%3Bborder%3A1px%20solid%20%23e2e8f0%3Bpadding%3A14px%3Bborder-radius%3A10px%3Bmargin-bottom%3A16px%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.item%20label%7Bdisplay%3Ablock%3Bfont-size%3A0.8rem%3Bfont-weight%3A600%3Bcolor%3A%23475569%3Bmargin-bottom%3A5px%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.item%20input%2C%23'%20%2B%20MODAL_ID%20%2B%20'%20.item%20select%7Bwidth%3A100%25%3Bpadding%3A7px%2010px%3Bborder%3A1px%20solid%20%23cbd5e1%3Bborder-radius%3A7px%3Bfont-size%3A0.88rem%3Bbackground%3A%23fff%3Boutline%3Anone%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.tbl-w%7Bborder%3A1px%20solid%20%23e2e8f0%3Bborder-radius%3A9px%3Boverflow-x%3Aauto%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20table%7Bwidth%3A100%25%3Bborder-collapse%3Acollapse%3Bfont-size%3A0.86rem%3Btext-align%3Aleft%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20th%7Bbackground%3A%23f1f5f9%3Bpadding%3A9px%2011px%3Bfont-weight%3A600%3Bcolor%3A%23334155%3Bborder-bottom%3A1px%20solid%20%23cbd5e1%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20td%7Bpadding%3A9px%2011px%3Bborder-bottom%3A1px%20solid%20%23f1f5f9%3Bvertical-align%3Amiddle%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20tr%3Ahover%20td%7Bbackground%3A%23f8fafc%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.badge%7Bdisplay%3Ainline-block%3Bpadding%3A2px%206px%3Bborder-radius%3A5px%3Bfont-size%3A0.74rem%3Bfont-weight%3A600%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.badge-c%7Bbackground%3A%23e0f2fe%3Bcolor%3A%230369a1%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.badge-lt%7Bbackground%3A%23dbeafe%3Bcolor%3A%231e40af%3Bmargin%3A2px%200%3Bdisplay%3Ablock%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.badge-th%7Bbackground%3A%23dcfce7%3Bcolor%3A%2315803d%3Bmargin%3A2px%200%3Bdisplay%3Ablock%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.ftr%7Bbackground%3A%23f8fafc%3Bborder-top%3A1px%20solid%20%23e2e8f0%3Bpadding%3A13px%2022px%3Bdisplay%3Aflex%3Bflex-wrap%3Awrap%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bgap%3A10px%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.actions%7Bdisplay%3Aflex%3Bflex-wrap%3Awrap%3Bgap%3A8px%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.btn%7Bpadding%3A8px%2016px%3Bborder-radius%3A7px%3Bfont-size%3A0.88rem%3Bfont-weight%3A600%3Bcursor%3Apointer%3Bdisplay%3Ainline-flex%3Balign-items%3Acenter%3Bgap%3A6px%3Btext-decoration%3Anone%3Bborder%3Anone%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.btn-pri%7Bbackground%3A%230284c7%3Bcolor%3A%23fff%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.btn-pri%3Ahover%7Bbackground%3A%230369a1%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.btn-sec%7Bbackground%3A%23f1f5f9%3Bcolor%3A%23334155%3Bborder%3A1px%20solid%20%23cbd5e1%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.btn-sec%3Ahover%7Bbackground%3A%23e2e8f0%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.q-btn%7Bfont-size%3A0.7rem%3Bpadding%3A2px%205px%3Bborder-radius%3A4px%3Bbackground%3A%23f1f5f9%3Bcolor%3A%230369a1%3Btext-decoration%3Anone%3Bborder%3A1px%20solid%20%23cbd5e1%3Bdisplay%3Ainline-block%3Bmargin%3A1px%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.q-btn%3Ahover%7Bbackground%3A%23e0f2fe%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.tip%7Bmargin-top%3A12px%3Bbackground%3A%23eff6ff%3Bborder-left%3A4px%20solid%20%233b82f6%3Bpadding%3A9px%2012px%3Bborder-radius%3A0%207px%207px%200%3Bfont-size%3A0.8rem%3Bcolor%3A%231e3a8a%3B%7D'%20%2B%20'%23'%20%2B%20MODAL_ID%20%2B%20'%20.tip%20ol%7Bmargin%3A3px%200%200%2016px%3Bpadding%3A0%3B%7D'%3B%20var%20rowsHtml%20%3D%20''%3B%20courses.forEach(function%20(c)%20%7B%20var%20ltBadges%20%3D%20c.lt.length%20%3E%200%20%3F%20c.lt.map(function%20(s)%20%7B%20return%20'%3Cdiv%20class%3D%22badge%20badge-lt%22%3E%F0%9F%93%98%20'%20%2B%20s.rawDay%20%2B%20'%20'%20%2B%20s.startTime%20%2B%20'-'%20%2B%20s.endTime%20%2B%20(s.room%20%3F%20'%20('%20%2B%20s.room%20%2B%20')'%20%3A%20'')%20%2B%20'%3C%2Fdiv%3E'%3B%20%7D).join('')%20%3A%20'%3Csmall%20style%3D%22color%3A%2394a3b8%3B%22%3EKh%C3%B4ng%20c%C3%B3%3C%2Fsmall%3E'%3B%20var%20thBadges%20%3D%20c.th.length%20%3E%200%20%3F%20c.th.map(function%20(s)%20%7B%20return%20'%3Cdiv%20class%3D%22badge%20badge-th%22%3E%F0%9F%94%AC%20'%20%2B%20s.rawDay%20%2B%20'%20'%20%2B%20s.startTime%20%2B%20'-'%20%2B%20s.endTime%20%2B%20(s.room%20%3F%20'%20('%20%2B%20s.room%20%2B%20')'%20%3A%20'')%20%2B%20'%3C%2Fdiv%3E'%3B%20%7D).join('')%20%3A%20'%3Csmall%20style%3D%22color%3A%2394a3b8%3B%22%3EKh%C3%B4ng%20c%C3%B3%3C%2Fsmall%3E'%3B%20var%20ltLinks%20%3D%20c.lt.map(function%20(s)%20%7B%20return%20'%3Ca%20href%3D%22%23%22%20class%3D%22q-btn%20hcmus-lnk%22%20data-cid%3D%22'%20%2B%20c.id%20%2B%20'%22%20data-tp%3D%22LT%22%3E%2BLT%20('%20%2B%20s.rawDay%20%2B%20')%3C%2Fa%3E'%3B%20%7D).join('')%3B%20var%20thLinks%20%3D%20c.th.map(function%20(s)%20%7B%20return%20'%3Ca%20href%3D%22%23%22%20class%3D%22q-btn%20hcmus-lnk%22%20data-cid%3D%22'%20%2B%20c.id%20%2B%20'%22%20data-tp%3D%22TH%22%3E%2BTH%20('%20%2B%20s.rawDay%20%2B%20')%3C%2Fa%3E'%3B%20%7D).join('')%3B%20rowsHtml%20%2B%3D%20'%3Ctr%3E'%20%2B%20'%3Ctd%20style%3D%22text-align%3Acenter%3B%22%3E%3Cinput%20type%3D%22checkbox%22%20class%3D%22hcmus-chk%22%20data-id%3D%22'%20%2B%20c.id%20%2B%20'%22%20checked%3E%3C%2Ftd%3E'%20%2B%20'%3Ctd%3E%3Cdiv%20style%3D%22font-weight%3A600%3B%22%3E'%20%2B%20c.name%20%2B%20'%3C%2Fdiv%3E%3Cdiv%3E%3Cspan%20class%3D%22badge%20badge-c%22%3E'%20%2B%20c.code%20%2B%20'%3C%2Fspan%3E%20%3Csmall%20style%3D%22color%3A%2364748b%3B%22%3E('%20%2B%20c.credits%20%2B%20'%20TC)%3C%2Fsmall%3E%3C%2Fdiv%3E%3C%2Ftd%3E'%20%2B%20'%3Ctd%3E%3Cb%3E'%20%2B%20c.classCode%20%2B%20'%3C%2Fb%3E%3C%2Ftd%3E'%20%2B%20'%3Ctd%3E'%20%2B%20ltBadges%20%2B%20'%3C%2Ftd%3E'%20%2B%20'%3Ctd%3E'%20%2B%20thBadges%20%2B%20'%3C%2Ftd%3E'%20%2B%20'%3Ctd%3E'%20%2B%20ltLinks%20%2B%20thLinks%20%2B%20'%3C%2Ftd%3E'%20%2B%20'%3C%2Ftr%3E'%3B%20%7D)%3B%20var%20studentHeader%20%3D%20student.full%20%3F%20('SV%3A%20%3Cb%3E'%20%2B%20student.full%20%2B%20'%3C%2Fb%3E%20%7C%20')%20%3A%20''%3B%20var%20semHeader%20%3D%20courses%5B0%5D%20%26%26%20courses%5B0%5D.sem%20%3F%20courses%5B0%5D.sem%20%3A%20'1%2F26-27'%3B%20modal.innerHTML%20%3D%20'%3Cstyle%3E'%20%2B%20styleStr%20%2B%20'%3C%2Fstyle%3E'%20%2B%20'%3Cdiv%20class%3D%22box%22%3E'%20%2B%20'%3Cdiv%20class%3D%22hdr%22%3E'%20%2B%20'%3Cdiv%3E'%20%2B%20'%3Ch2%3E%F0%9F%93%85%20Xu%E1%BA%A5t%20TKB%20sang%20Google%20Calendar%3C%2Fh2%3E'%20%2B%20'%3Cdiv%20class%3D%22sub%22%3E'%20%2B%20studentHeader%20%2B%20'HK%3A%20'%20%2B%20semHeader%20%2B%20'%20%7C%20Ph%C3%A1t%20hi%E1%BB%87n%20%3Cb%3E'%20%2B%20courses.length%20%2B%20'%3C%2Fb%3E%20m%C3%B4n%20h%E1%BB%8Dc%3C%2Fdiv%3E'%20%2B%20'%3C%2Fdiv%3E'%20%2B%20'%3Cbutton%20class%3D%22btn-x%22%20id%3D%22hcmus-x%22%3E%E2%9C%95%3C%2Fbutton%3E'%20%2B%20'%3C%2Fdiv%3E'%20%2B%20'%3Cdiv%20class%3D%22bdy%22%3E'%20%2B%20'%3Cdiv%20class%3D%22grid%22%3E'%20%2B%20'%3Cdiv%20class%3D%22item%22%3E'%20%2B%20'%3Clabel%3E%F0%9F%93%85%20Th%E1%BB%A9%20Hai%20tu%E1%BA%A7n%201%20(B%E1%BA%AFt%20%C4%91%E1%BA%A7u%20k%E1%BB%B3)%3A%3C%2Flabel%3E'%20%2B%20'%3Cinput%20type%3D%22date%22%20id%3D%22hcmus-sdate%22%20value%3D%22'%20%2B%20defMon%20%2B%20'%22%3E'%20%2B%20'%3C%2Fdiv%3E'%20%2B%20'%3Cdiv%20class%3D%22item%22%3E'%20%2B%20'%3Clabel%3E%E2%8F%B3%20S%E1%BB%91%20tu%E1%BA%A7n%20h%E1%BB%8Dc%3A%3C%2Flabel%3E'%20%2B%20'%3Cselect%20id%3D%22hcmus-weeks%22%3E'%20%2B%20'%3Coption%20value%3D%2215%22%20selected%3E15%20tu%E1%BA%A7n%20(Chu%E1%BA%A9n%20HK)%3C%2Foption%3E'%20%2B%20'%3Coption%20value%3D%2216%22%3E16%20tu%E1%BA%A7n%3C%2Foption%3E'%20%2B%20'%3Coption%20value%3D%2210%22%3E10%20tu%E1%BA%A7n%20(HK%20H%C3%A8)%3C%2Foption%3E'%20%2B%20'%3Coption%20value%3D%2212%22%3E12%20tu%E1%BA%A7n%3C%2Foption%3E'%20%2B%20'%3Coption%20value%3D%228%22%3E8%20tu%E1%BA%A7n%3C%2Foption%3E'%20%2B%20'%3C%2Fselect%3E'%20%2B%20'%3C%2Fdiv%3E'%20%2B%20'%3Cdiv%20class%3D%22item%22%3E'%20%2B%20'%3Clabel%3E%F0%9F%94%94%20Th%C3%B4ng%20b%C3%A1o%20tr%C6%B0%E1%BB%9Bc%20gi%E1%BB%9D%20h%E1%BB%8Dc%3A%3C%2Flabel%3E'%20%2B%20'%3Cselect%20id%3D%22hcmus-alarm%22%3E'%20%2B%20'%3Coption%20value%3D%2215%22%20selected%3ETr%C6%B0%E1%BB%9Bc%2015%20ph%C3%BAt%3C%2Foption%3E'%20%2B%20'%3Coption%20value%3D%2230%22%3ETr%C6%B0%E1%BB%9Bc%2030%20ph%C3%BAt%3C%2Foption%3E'%20%2B%20'%3Coption%20value%3D%2260%22%3ETr%C6%B0%E1%BB%9Bc%201%20ti%E1%BA%BFng%3C%2Foption%3E'%20%2B%20'%3Coption%20value%3D%220%22%3EKh%C3%B4ng%20th%C3%B4ng%20b%C3%A1o%3C%2Foption%3E'%20%2B%20'%3C%2Fselect%3E'%20%2B%20'%3C%2Fdiv%3E'%20%2B%20'%3C%2Fdiv%3E'%20%2B%20'%3Cdiv%20class%3D%22tbl-w%22%3E'%20%2B%20'%3Ctable%3E'%20%2B%20'%3Cthead%3E'%20%2B%20'%3Ctr%3E'%20%2B%20'%3Cth%20style%3D%22width%3A32px%3B%20text-align%3Acenter%3B%22%3E%3Cinput%20type%3D%22checkbox%22%20id%3D%22hcmus-all%22%20checked%3E%3C%2Fth%3E'%20%2B%20'%3Cth%3EM%C3%B4n%20h%E1%BB%8Dc%3C%2Fth%3E'%20%2B%20'%3Cth%20style%3D%22width%3A75px%3B%22%3EL%E1%BB%9Bp%20HP%3C%2Fth%3E'%20%2B%20'%3Cth%3EL%E1%BB%8Bch%20L%C3%BD%20thuy%E1%BA%BFt%3C%2Fth%3E'%20%2B%20'%3Cth%3EL%E1%BB%8Bch%20Th%E1%BB%B1c%20h%C3%A0nh%3C%2Fth%3E'%20%2B%20'%3Cth%20style%3D%22width%3A95px%3B%22%3ETh%C3%AAm%20nhanh%3C%2Fth%3E'%20%2B%20'%3C%2Ftr%3E'%20%2B%20'%3C%2Fthead%3E'%20%2B%20'%3Ctbody%3E'%20%2B%20rowsHtml%20%2B%20'%3C%2Ftbody%3E'%20%2B%20'%3C%2Ftable%3E'%20%2B%20'%3C%2Fdiv%3E'%20%2B%20'%3Cdiv%20class%3D%22tip%22%3E'%20%2B%20'%3Cb%3E%F0%9F%92%A1%20H%C6%B0%E1%BB%9Bng%20d%E1%BA%ABn%20nh%E1%BA%ADp%20v%C3%A0o%20Google%20Calendar%3A%3C%2Fb%3E'%20%2B%20'%3Col%3E'%20%2B%20'%3Cli%3EB%E1%BA%A5m%20%3Cb%3E%22%F0%9F%93%A5%20T%E1%BA%A3i%20file%20.ICS%22%3C%2Fb%3E%20b%C3%AAn%20d%C6%B0%E1%BB%9Bi%20%C4%91%E1%BB%83%20l%C6%B0u%20file%20l%E1%BB%8Bch%20v%E1%BB%81%20m%C3%A1y%20t%C3%ADnh.%3C%2Fli%3E'%20%2B%20'%3Cli%3EB%E1%BA%A5m%20%3Cb%3E%22%F0%9F%8C%90%20M%E1%BB%9F%20Google%20Calendar%20Import%22%3C%2Fb%3E%20(ho%E1%BA%B7c%20v%C3%A0o%20Google%20Calendar%20-%3E%20%E2%9A%99%EF%B8%8F%20C%C3%A0i%20%C4%91%E1%BA%B7t%20-%3E%20%3Cb%3ENh%E1%BA%ADp%20%26%20Xu%E1%BA%A5t%3C%2Fb%3E).%3C%2Fli%3E'%20%2B%20'%3Cli%3ECh%E1%BB%8Dn%20file%20%3Ccode%3E.ics%3C%2Fcode%3E%20v%E1%BB%ABa%20t%E1%BA%A3i%2C%20ch%E1%BB%8Dn%20Calendar%20mu%E1%BB%91n%20th%C3%AAm%20(n%C3%AAn%20t%E1%BA%A1o%20l%E1%BB%8Bch%20ri%C3%AAng%20t%C3%AAn%20%3Ci%3ETKB%20HK1%3C%2Fi%3E)%20r%E1%BB%93i%20b%E1%BA%A5m%20%3Cb%3ENh%E1%BA%ADp%3C%2Fb%3E%20l%C3%A0%20xong!%3C%2Fli%3E'%20%2B%20'%3C%2Fol%3E'%20%2B%20'%3C%2Fdiv%3E'%20%2B%20'%3C%2Fdiv%3E'%20%2B%20'%3Cdiv%20class%3D%22ftr%22%3E'%20%2B%20'%3Cdiv%20style%3D%22font-size%3A0.82rem%3B%20color%3A%2364748b%3B%22%20id%3D%22hcmus-count%22%3E%C4%90ang%20ch%E1%BB%8Dn%3A%20%3Cb%3E'%20%2B%20courses.length%20%2B%20'%2F'%20%2B%20courses.length%20%2B%20'%3C%2Fb%3E%20m%C3%B4n%3C%2Fdiv%3E'%20%2B%20'%3Cdiv%20class%3D%22actions%22%3E'%20%2B%20'%3Cbutton%20class%3D%22btn%20btn-sec%22%20id%3D%22hcmus-cp%22%3E%F0%9F%93%8B%20Sao%20ch%C3%A9p%20ICS%3C%2Fbutton%3E'%20%2B%20'%3Ca%20class%3D%22btn%20btn-sec%22%20href%3D%22https%3A%2F%2Fcalendar.google.com%2Fcalendar%2Fu%2F0%2Fr%2Fsettings%2Fexport%22%20target%3D%22_blank%22%3E%F0%9F%8C%90%20M%E1%BB%9F%20Google%20Calendar%20Import%3C%2Fa%3E'%20%2B%20'%3Cbutton%20class%3D%22btn%20btn-pri%22%20id%3D%22hcmus-dl%22%3E%F0%9F%93%A5%20T%E1%BA%A3i%20file%20.ICS%20(Khuy%C3%AAn%20d%C3%B9ng)%3C%2Fbutton%3E'%20%2B%20'%3C%2Fdiv%3E'%20%2B%20'%3C%2Fdiv%3E'%20%2B%20'%3C%2Fdiv%3E'%3B%20document.body.appendChild(modal)%3B%20var%20close%20%3D%20function%20()%20%7B%20modal.remove()%3B%20%7D%3B%20var%20xBtn%20%3D%20modal.querySelector('%23hcmus-x')%3B%20if%20(xBtn)%20xBtn.onclick%20%3D%20close%3B%20modal.onclick%20%3D%20function%20(e)%20%7B%20if%20(e.target%20%3D%3D%3D%20modal)%20close()%3B%20%7D%3B%20document.onkeydown%20%3D%20function%20(e)%20%7B%20if%20(e.key%20%3D%3D%3D%20'Escape')%20close()%3B%20%7D%3B%20var%20chkAll%20%3D%20modal.querySelector('%23hcmus-all')%3B%20var%20chks%20%3D%20Array.from(modal.querySelectorAll('.hcmus-chk'))%3B%20var%20cnt%20%3D%20modal.querySelector('%23hcmus-count')%3B%20function%20updateCnt()%20%7B%20var%20sel%20%3D%20courses.filter(function%20(c)%20%7B%20return%20c.selected%3B%20%7D).length%3B%20if%20(cnt)%20cnt.innerHTML%20%3D%20'%C4%90ang%20ch%E1%BB%8Dn%3A%20%3Cb%3E'%20%2B%20sel%20%2B%20'%2F'%20%2B%20courses.length%20%2B%20'%3C%2Fb%3E%20m%C3%B4n'%3B%20if%20(chkAll)%20chkAll.checked%20%3D%20sel%20%3D%3D%3D%20courses.length%3B%20%7D%20if%20(chkAll)%20%7B%20chkAll.onchange%20%3D%20function%20()%20%7B%20chks.forEach(function%20(c)%20%7B%20c.checked%20%3D%20chkAll.checked%3B%20var%20o%20%3D%20courses.find(function%20(x)%20%7B%20return%20x.id%20%3D%3D%3D%20c.getAttribute('data-id')%3B%20%7D)%3B%20if%20(o)%20o.selected%20%3D%20chkAll.checked%3B%20%7D)%3B%20updateCnt()%3B%20%7D%3B%20%7D%20chks.forEach(function%20(c)%20%7B%20c.onchange%20%3D%20function%20()%20%7B%20var%20o%20%3D%20courses.find(function%20(x)%20%7B%20return%20x.id%20%3D%3D%3D%20c.getAttribute('data-id')%3B%20%7D)%3B%20if%20(o)%20o.selected%20%3D%20c.checked%3B%20updateCnt()%3B%20%7D%3B%20%7D)%3B%20var%20sDateEl%20%3D%20modal.querySelector('%23hcmus-sdate')%3B%20var%20weeksEl%20%3D%20modal.querySelector('%23hcmus-weeks')%3B%20var%20alarmEl%20%3D%20modal.querySelector('%23hcmus-alarm')%3B%20var%20getOpts%20%3D%20function%20()%20%7B%20return%20%7B%20start%3A%20(sDateEl%20%26%26%20sDateEl.value)%20%3F%20sDateEl.value%20%3A%20defMon%2C%20weeks%3A%20(weeksEl%20%26%26%20weeksEl.value)%20%3F%20(parseInt(weeksEl.value%2C%2010)%20%7C%7C%2015)%20%3A%2015%2C%20alarm%3A%20(alarmEl%20%26%26%20alarmEl.value)%20%3F%20(parseInt(alarmEl.value%2C%2010)%20%7C%7C%200)%20%3A%200%20%7D%3B%20%7D%3B%20var%20dlBtn%20%3D%20modal.querySelector('%23hcmus-dl')%3B%20if%20(dlBtn)%20%7B%20dlBtn.onclick%20%3D%20function%20()%20%7B%20var%20opts%20%3D%20getOpts()%3B%20var%20res%20%3D%20makeICS(courses%2C%20opts.start%2C%20opts.weeks%2C%20opts.alarm%2C%20student)%3B%20if%20(res.count%20%3D%3D%3D%200)%20return%20alert('Vui%20l%C3%B2ng%20ch%E1%BB%8Dn%20%C3%ADt%20nh%E1%BA%A5t%201%20m%C3%B4n%20c%C3%B3%20l%E1%BB%8Bch%20h%E1%BB%8Dc!')%3B%20var%20blob%20%3D%20new%20Blob(%5Bres.content%5D%2C%20%7B%20type%3A%20'text%2Fcalendar%3Bcharset%3Dutf-8'%20%7D)%3B%20var%20a%20%3D%20document.createElement('a')%3B%20var%20sId%20%3D%20(student%20%26%26%20student.id)%20%3F%20('_'%20%2B%20student.id)%20%3A%20''%3B%20var%20sem%20%3D%20(courses%5B0%5D%20%26%26%20courses%5B0%5D.sem)%20%3F%20('_HK'%20%2B%20courses%5B0%5D.sem.replace(%2F%5B%5Ea-zA-Z0-9%5D%2Fg%2C%20'_'))%20%3A%20''%3B%20a.href%20%3D%20URL.createObjectURL(blob)%3B%20a.download%20%3D%20'TKB_HCMUS'%20%2B%20sId%20%2B%20sem%20%2B%20'.ics'%3B%20document.body.appendChild(a)%3B%20a.click()%3B%20document.body.removeChild(a)%3B%20URL.revokeObjectURL(a.href)%3B%20dlBtn.innerText%20%3D%20'%E2%9C%85%20%C4%90%C3%A3%20t%E1%BA%A3i%20xong!'%3B%20setTimeout(function%20()%20%7B%20dlBtn.innerText%20%3D%20'%F0%9F%93%A5%20T%E1%BA%A3i%20file%20.ICS%20(Khuy%C3%AAn%20d%C3%B9ng)'%3B%20%7D%2C%202000)%3B%20%7D%3B%20%7D%20var%20cpBtn%20%3D%20modal.querySelector('%23hcmus-cp')%3B%20if%20(cpBtn)%20%7B%20cpBtn.onclick%20%3D%20function%20()%20%7B%20var%20opts%20%3D%20getOpts()%3B%20var%20res%20%3D%20makeICS(courses%2C%20opts.start%2C%20opts.weeks%2C%20opts.alarm%2C%20student)%3B%20navigator.clipboard.writeText(res.content).then(function%20()%20%7B%20cpBtn.innerText%20%3D%20'%E2%9C%85%20%C4%90%C3%A3%20sao%20ch%C3%A9p!'%3B%20setTimeout(function%20()%20%7B%20cpBtn.innerText%20%3D%20'%F0%9F%93%8B%20Sao%20ch%C3%A9p%20ICS'%3B%20%7D%2C%202000)%3B%20%7D)%3B%20%7D%3B%20%7D%20modal.querySelectorAll('.hcmus-lnk').forEach(function%20(lnk)%20%7B%20lnk.onclick%20%3D%20function%20(e)%20%7B%20e.preventDefault()%3B%20var%20course%20%3D%20courses.find(function%20(x)%20%7B%20return%20x.id%20%3D%3D%3D%20lnk.getAttribute('data-cid')%3B%20%7D)%3B%20if%20(!course)%20return%3B%20var%20isLT%20%3D%20lnk.getAttribute('data-tp')%20%3D%3D%3D%20'LT'%3B%20var%20list%20%3D%20isLT%20%3F%20course.lt%20%3A%20course.th%3B%20if%20(!list%20%7C%7C%20!list%5B0%5D)%20return%3B%20var%20opts%20%3D%20getOpts()%3B%20var%20u%20%3D%20makeGCalUrl(course%2C%20Object.assign(%7B%7D%2C%20list%5B0%5D%2C%20%7B%20typeName%3A%20isLT%20%3F%20'L%C3%BD%20thuy%E1%BA%BFt'%20%3A%20'Th%E1%BB%B1c%20h%C3%A0nh'%2C%20pfx%3A%20'%5B'%20%2B%20(isLT%20%3F%20'LT'%20%3A%20'TH')%20%2B%20'%5D'%20%7D)%2C%20opts.start%2C%20opts.weeks)%3B%20window.open(u%2C%20'_blank')%3B%20%7D%3B%20%7D)%3B%20%7D)()%3B";
+    var bmCode = "javascript:(function () { 'use strict'; var MODAL_ID = 'hcmus-gcal-exporter-modal'; var oldModal = document.getElementById(MODAL_ID); if (oldModal) { oldModal.remove(); } function getStudentInfo() { var text = document.body.innerText; var match = text.match(/\\b(\\d{7,10})\\s*[-–:]\\s*([A-ZÀ-Ỹ\\s]{3,40})\\b/u); if (match) { return { id: match[1].trim(), name: match[2].trim(), full: match[1].trim() + ' - ' + match[2].trim() }; } return { id: '', name: '', full: '' }; } function findCourseTable() { var tables = Array.from(document.querySelectorAll('table')); for (var i = 0; i < tables.length; i++) { var txt = tables[i].innerText; if ((txt.indexOf('Mã MH') >= 0 || txt.indexOf('Mã môn') >= 0) && (txt.indexOf('Lịch LT') >= 0 || txt.indexOf('Lịch TH') >= 0 || txt.indexOf('Lớp HP') >= 0)) { return tables[i]; } } return null; } function parseSchedule(text) { if (!text || typeof text !== 'string') return []; var clean = text.replace(/<br\\s*\\/?>/gi, '\\n'); var regex = /(?:(T[2-7]|Thứ\\s*[2-7]|Thứ\\s*(?:Hai|Ba|Tư|Bốn|Năm|Sáu|Bảy)|CN|Chủ\\s*nhật))\\s*[:\\-\\s]?\\s*(\\d{1,2})[h:](\\d{2})\\s*[-–—~đến\\s]+\\s*(\\d{1,2})[h:](\\d{2})(?:[^\\n\\r,;]*?(?:[\\(\\[]\\s*([^()\\[\\]]+)\\s*[\\)\\]]|[-–—:]\\s*([A-Za-z0-9\\.\\-_]+)|\\b(?:phòng|p\\.?)\\s*([A-Za-z0-9\\.\\-_]+)))?/gi; var res = []; var m; while ((m = regex.exec(clean)) !== null) { var rawDay = m[1]; var startH = m[2].padStart(2, '0'); var startM = m[3]; var endH = m[4].padStart(2, '0'); var endM = m[5]; var room = (m[6] || m[7] || m[8] || '').trim(); var dow = 1; var dLower = rawDay.toLowerCase().replace(/\\s+/g, ''); if (dLower.indexOf('2') >= 0 || dLower.indexOf('hai') >= 0) dow = 1; else if (dLower.indexOf('3') >= 0 || dLower.indexOf('ba') >= 0) dow = 2; else if (dLower.indexOf('4') >= 0 || dLower.indexOf('tư') >= 0 || dLower.indexOf('bốn') >= 0) dow = 3; else if (dLower.indexOf('5') >= 0 || dLower.indexOf('năm') >= 0) dow = 4; else if (dLower.indexOf('6') >= 0 || dLower.indexOf('sáu') >= 0) dow = 5; else if (dLower.indexOf('7') >= 0 || dLower.indexOf('bảy') >= 0) dow = 6; else if (dLower.indexOf('cn') >= 0 || dLower.indexOf('chủ') >= 0 || dLower.indexOf('chu') >= 0) dow = 0; var offset = dow === 0 ? 6 : dow - 1; res.push({ rawDay: rawDay, dow: dow, offset: offset, startTime: startH + ':' + startM, endTime: endH + ':' + endM, room: room }); } return res; } function extractCourses(table) { var trs = Array.from(table.querySelectorAll('tr')); var headerRow = null; for (var i = 0; i < trs.length; i++) { var txt = trs[i].innerText; if (txt.indexOf('Mã MH') >= 0 || txt.indexOf('Tên MH') >= 0) { headerRow = trs[i]; break; } } var col = { code: 1, name: 2, credits: 3, classCode: 4, sem: 5, lt: 9, th: 10, gvLt: 11, gvTh: 12 }; if (headerRow) { Array.from(headerRow.querySelectorAll('th, td')).forEach(function (c, idx) { var t = c.innerText.trim().toLowerCase(); if (t.indexOf('mã mh') >= 0 || t.indexOf('mã môn') >= 0) col.code = idx; else if (t.indexOf('tên mh') >= 0 || t.indexOf('tên môn') >= 0) col.name = idx; else if (t === 'tc' || t.indexOf('tín chỉ') >= 0) col.credits = idx; else if (t.indexOf('lớp hp') >= 0 || t.indexOf('lớp') >= 0) col.classCode = idx; else if (t.indexOf('học kỳ') >= 0 || t.indexOf('học kì') >= 0) col.sem = idx; else if (t.indexOf('lịch lt') >= 0 || t.indexOf('lý thuyết') >= 0) col.lt = idx; else if (t.indexOf('lịch th') >= 0 || t.indexOf('thực hành') >= 0) col.th = idx; else if (t.indexOf('gv-lt') >= 0 || t.indexOf('gv lt') >= 0) col.gvLt = idx; else if (t.indexOf('gv-th') >= 0 || t.indexOf('gv th') >= 0) col.gvTh = idx; }); } var list = []; var start = headerRow ? trs.indexOf(headerRow) + 1 : 1; for (var r = start; r < trs.length; r++) { var cells = Array.from(trs[r].querySelectorAll('td, th')); if (cells.length < 5) continue; var getVal = function (idx) { return (idx >= 0 && cells[idx]) ? cells[idx].innerText.trim() : ''; }; var code = getVal(col.code); var name = getVal(col.name); if (!code && !name) continue; var credits = getVal(col.credits); var classCode = getVal(col.classCode); var sem = getVal(col.sem); var ltRaw = getVal(col.lt); var thRaw = getVal(col.th); var gvLt = getVal(col.gvLt); var gvTh = getVal(col.gvTh); var lt = parseSchedule(ltRaw); var th = parseSchedule(thRaw); if (lt.length > 0 || th.length > 0 || name) { list.push({ id: 'c_' + r, code: code, name: name, credits: credits, classCode: classCode, sem: sem, gvLt: gvLt, gvTh: gvTh, lt: lt, th: th, selected: true }); } } return list; } function getDefaultMonday() { var d = new Date(); var day = d.getDay(); var diff = (day === 0 ? -6 : 1) - day; d.setDate(d.getDate() + diff); return d.toISOString().split('T')[0]; } function makeICS(courses, startStr, weeks, alarmMins, student) { var parts = startStr.split('-').map(Number); var baseMon = new Date(parts[0], parts[1] - 1, parts[2]); var pad = function (n) { return String(n).padStart(2, '0'); }; var now = new Date(); var dtstamp = now.getUTCFullYear() + pad(now.getUTCMonth() + 1) + pad(now.getUTCDate()) + 'T' + pad(now.getUTCHours()) + pad(now.getUTCMinutes()) + pad(now.getUTCSeconds()) + 'Z'; var calName = (student && student.full) ? ('TKB HCMUS - ' + student.full) : 'Thời khóa biểu HCMUS'; var lines = [ 'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//HCMUS CTDB//Schedule to Google Calendar//VI', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'X-WR-CALNAME:' + calName, 'X-WR-TIMEZONE:Asia/Ho_Chi_Minh', 'BEGIN:VTIMEZONE', 'TZID:Asia/Ho_Chi_Minh', 'X-LIC-LOCATION:Asia/Ho_Chi_Minh', 'BEGIN:STANDARD', 'TZOFFSETFROM:+0700', 'TZOFFSETTO:+0700', 'TZNAME:+07', 'DTSTART:19700101T000000', 'END:STANDARD', 'END:VTIMEZONE' ]; var evCount = 0; courses.filter(function (c) { return c.selected; }).forEach(function (course) { var sessions = []; course.lt.forEach(function (s) { sessions.push(Object.assign({}, s, { typeName: 'Lý thuyết', pfx: '[LT]', teacher: course.gvLt })); }); course.th.forEach(function (s) { sessions.push(Object.assign({}, s, { typeName: 'Thực hành', pfx: '[TH]', teacher: course.gvTh })); }); sessions.forEach(function (s) { evCount++; var sDate = new Date(baseMon); sDate.setDate(baseMon.getDate() + s.offset); var shm = s.startTime.split(':').map(Number); var ehm = s.endTime.split(':').map(Number); var sDt = new Date(sDate); sDt.setHours(shm[0], shm[1], 0, 0); var eDt = new Date(sDate); eDt.setHours(ehm[0], ehm[1], 0, 0); var sStr = sDt.getFullYear() + pad(sDt.getMonth() + 1) + pad(sDt.getDate()) + 'T' + pad(sDt.getHours()) + pad(sDt.getMinutes()) + '00'; var eStr = eDt.getFullYear() + pad(eDt.getMonth() + 1) + pad(eDt.getDate()) + 'T' + pad(eDt.getHours()) + pad(eDt.getMinutes()) + '00'; var summary = s.pfx + ' ' + course.name + ' - ' + course.classCode; var loc = s.room ? ('Phòng ' + s.room + ', HCMUS') : 'ĐH Khoa học Tự nhiên ĐHQG-HCM'; var desc = 'Môn học: ' + course.name + '\\\\nMã môn: ' + course.code + '\\\\nLớp HP: ' + course.classCode + '\\\\nLoại lớp: ' + s.typeName; if (course.credits) desc += '\\\\nSố tín chỉ: ' + course.credits; if (course.sem) desc += '\\\\nHọc kỳ: ' + course.sem; if (s.teacher) desc += '\\\\nGiảng viên: ' + s.teacher; if (s.room) desc += '\\\\nPhòng học: ' + s.room; if (student && student.full) desc += '\\\\nSinh viên: ' + student.full; desc += '\\\\nNguồn: portal.ctdb.hcmus.edu.vn'; var uid = 'hcmus-' + (course.code || 'mh') + '-' + s.pfx.replace(/[^A-Z]/g, '') + '-' + s.dow + '-' + evCount + '-' + Date.now() + '@ctdb.hcmus.edu.vn'; lines.push('BEGIN:VEVENT'); lines.push('UID:' + uid); lines.push('DTSTAMP:' + dtstamp); lines.push('DTSTART;TZID=Asia/Ho_Chi_Minh:' + sStr); lines.push('DTEND;TZID=Asia/Ho_Chi_Minh:' + eStr); lines.push('RRULE:FREQ=WEEKLY;COUNT=' + weeks); lines.push('SUMMARY:' + summary); lines.push('LOCATION:' + loc); lines.push('DESCRIPTION:' + desc); lines.push('STATUS:CONFIRMED'); lines.push('TRANSP:OPAQUE'); if (alarmMins > 0) { lines.push('BEGIN:VALARM'); lines.push('ACTION:DISPLAY'); lines.push('DESCRIPTION:Nhắc nhở: Sắp tới giờ học ' + course.name); lines.push('TRIGGER:-PT' + alarmMins + 'M'); lines.push('END:VALARM'); } lines.push('END:VEVENT'); }); }); lines.push('END:VCALENDAR'); return { content: lines.join('\\r\\n'), count: evCount }; } function makeGCalUrl(course, s, startStr, weeks) { var parts = startStr.split('-').map(Number); var baseMon = new Date(parts[0], parts[1] - 1, parts[2]); var sDate = new Date(baseMon); sDate.setDate(baseMon.getDate() + s.offset); var pad = function (n) { return String(n).padStart(2, '0'); }; var shm = s.startTime.split(':').map(Number); var ehm = s.endTime.split(':').map(Number); var sDt = new Date(sDate); sDt.setHours(shm[0], shm[1], 0, 0); var eDt = new Date(sDate); eDt.setHours(ehm[0], ehm[1], 0, 0); var sStr = sDt.getFullYear() + pad(sDt.getMonth() + 1) + pad(sDt.getDate()) + 'T' + pad(sDt.getHours()) + pad(sDt.getMinutes()) + '00'; var eStr = eDt.getFullYear() + pad(eDt.getMonth() + 1) + pad(eDt.getDate()) + 'T' + pad(eDt.getHours()) + pad(eDt.getMinutes()) + '00'; var title = s.pfx + ' ' + course.name + ' - ' + course.classCode; var loc = s.room ? ('Phòng ' + s.room + ', HCMUS') : 'ĐH Khoa học Tự nhiên ĐHQG-HCM'; var desc = 'Mã MH: ' + course.code + ' | Lớp: ' + course.classCode + ' | Loại: ' + s.typeName; var u = new URL('https://calendar.google.com/calendar/render'); u.searchParams.set('action', 'TEMPLATE'); u.searchParams.set('text', title); u.searchParams.set('dates', sStr + '/' + eStr); u.searchParams.set('details', desc); u.searchParams.set('location', loc); u.searchParams.set('recur', 'RRULE:FREQ=WEEKLY;COUNT=' + weeks); u.searchParams.set('ctz', 'Asia/Ho_Chi_Minh'); return u.toString(); } var student = getStudentInfo(); var table = findCourseTable(); if (!table) { alert('❌ Không tìm thấy bảng kết quả ĐKHP trên trang này!\\n\\nVui lòng kiểm tra lại bạn đang ở trang:\\nhttps://portal.ctdb.hcmus.edu.vn/sinh-vien/ket-qua-dkhp'); return; } var courses = extractCourses(table); if (courses.length === 0) { alert('⚠️ Đã tìm thấy bảng nhưng không phát hiện môn học nào được đăng ký.'); return; } var defMon = getDefaultMonday(); var modal = document.createElement('div'); modal.id = MODAL_ID; var styleStr = '#' + MODAL_ID + '{position:fixed;inset:0;z-index:999999;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif;color:#1e293b;}' + '#' + MODAL_ID + ' *{box-sizing:border-box;}' + '#' + MODAL_ID + ' .box{background:#fff;width:94%;max-width:860px;max-height:90vh;border-radius:16px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.35);display:flex;flex-direction:column;overflow:hidden;}' + '#' + MODAL_ID + ' .hdr{background:linear-gradient(135deg,#0f4c81,#0284c7);color:#fff;padding:16px 22px;display:flex;justify-content:space-between;align-items:center;}' + '#' + MODAL_ID + ' .hdr h2{margin:0;font-size:1.2rem;font-weight:700;}' + '#' + MODAL_ID + ' .hdr .sub{font-size:0.84rem;opacity:0.9;margin-top:3px;}' + '#' + MODAL_ID + ' .btn-x{background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:1.1rem;cursor:pointer;}' + '#' + MODAL_ID + ' .btn-x:hover{background:rgba(255,255,255,0.35);}' + '#' + MODAL_ID + ' .bdy{padding:18px 22px;overflow-y:auto;flex:1;}' + '#' + MODAL_ID + ' .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;background:#f8fafc;border:1px solid #e2e8f0;padding:14px;border-radius:10px;margin-bottom:16px;}' + '#' + MODAL_ID + ' .item label{display:block;font-size:0.8rem;font-weight:600;color:#475569;margin-bottom:5px;}' + '#' + MODAL_ID + ' .item input,#' + MODAL_ID + ' .item select{width:100%;padding:7px 10px;border:1px solid #cbd5e1;border-radius:7px;font-size:0.88rem;background:#fff;outline:none;}' + '#' + MODAL_ID + ' .tbl-w{border:1px solid #e2e8f0;border-radius:9px;overflow-x:auto;}' + '#' + MODAL_ID + ' table{width:100%;border-collapse:collapse;font-size:0.86rem;text-align:left;}' + '#' + MODAL_ID + ' th{background:#f1f5f9;padding:9px 11px;font-weight:600;color:#334155;border-bottom:1px solid #cbd5e1;}' + '#' + MODAL_ID + ' td{padding:9px 11px;border-bottom:1px solid #f1f5f9;vertical-align:middle;}' + '#' + MODAL_ID + ' tr:hover td{background:#f8fafc;}' + '#' + MODAL_ID + ' .badge{display:inline-block;padding:2px 6px;border-radius:5px;font-size:0.74rem;font-weight:600;}' + '#' + MODAL_ID + ' .badge-c{background:#e0f2fe;color:#0369a1;}' + '#' + MODAL_ID + ' .badge-lt{background:#dbeafe;color:#1e40af;margin:2px 0;display:block;}' + '#' + MODAL_ID + ' .badge-th{background:#dcfce7;color:#15803d;margin:2px 0;display:block;}' + '#' + MODAL_ID + ' .ftr{background:#f8fafc;border-top:1px solid #e2e8f0;padding:13px 22px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;}' + '#' + MODAL_ID + ' .actions{display:flex;flex-wrap:wrap;gap:8px;}' + '#' + MODAL_ID + ' .btn{padding:8px 16px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none;border:none;}' + '#' + MODAL_ID + ' .btn-pri{background:#0284c7;color:#fff;}' + '#' + MODAL_ID + ' .btn-pri:hover{background:#0369a1;}' + '#' + MODAL_ID + ' .btn-sec{background:#f1f5f9;color:#334155;border:1px solid #cbd5e1;}' + '#' + MODAL_ID + ' .btn-sec:hover{background:#e2e8f0;}' + '#' + MODAL_ID + ' .q-btn{font-size:0.7rem;padding:2px 5px;border-radius:4px;background:#f1f5f9;color:#0369a1;text-decoration:none;border:1px solid #cbd5e1;display:inline-block;margin:1px;}' + '#' + MODAL_ID + ' .q-btn:hover{background:#e0f2fe;}' + '#' + MODAL_ID + ' .tip{margin-top:12px;background:#eff6ff;border-left:4px solid #3b82f6;padding:9px 12px;border-radius:0 7px 7px 0;font-size:0.8rem;color:#1e3a8a;}' + '#' + MODAL_ID + ' .tip ol{margin:3px 0 0 16px;padding:0;}'; var rowsHtml = ''; courses.forEach(function (c) { var ltBadges = c.lt.length > 0 ? c.lt.map(function (s) { return '<div class=\"badge badge-lt\">📘 ' + s.rawDay + ' ' + s.startTime + '-' + s.endTime + (s.room ? ' (' + s.room + ')' : '') + '</div>'; }).join('') : '<small style=\"color:#94a3b8;\">Không có</small>'; var thBadges = c.th.length > 0 ? c.th.map(function (s) { return '<div class=\"badge badge-th\">🔬 ' + s.rawDay + ' ' + s.startTime + '-' + s.endTime + (s.room ? ' (' + s.room + ')' : '') + '</div>'; }).join('') : '<small style=\"color:#94a3b8;\">Không có</small>'; var ltLinks = c.lt.map(function (s) { return '<a href=\"#\" class=\"q-btn hcmus-lnk\" data-cid=\"' + c.id + '\" data-tp=\"LT\">+LT (' + s.rawDay + ')</a>'; }).join(''); var thLinks = c.th.map(function (s) { return '<a href=\"#\" class=\"q-btn hcmus-lnk\" data-cid=\"' + c.id + '\" data-tp=\"TH\">+TH (' + s.rawDay + ')</a>'; }).join(''); rowsHtml += '<tr>' + '<td style=\"text-align:center;\"><input type=\"checkbox\" class=\"hcmus-chk\" data-id=\"' + c.id + '\" checked></td>' + '<td><div style=\"font-weight:600;\">' + c.name + '</div><div><span class=\"badge badge-c\">' + c.code + '</span> <small style=\"color:#64748b;\">(' + c.credits + ' TC)</small></div></td>' + '<td><b>' + c.classCode + '</b></td>' + '<td>' + ltBadges + '</td>' + '<td>' + thBadges + '</td>' + '<td>' + ltLinks + thLinks + '</td>' + '</tr>'; }); var studentHeader = student.full ? ('SV: <b>' + student.full + '</b> | ') : ''; var semHeader = courses[0] && courses[0].sem ? courses[0].sem : '1/26-27'; modal.innerHTML = '<style>' + styleStr + '</style>' + '<div class=\"box\">' + '<div class=\"hdr\">' + '<div>' + '<h2>📅 Xuất TKB sang Google Calendar</h2>' + '<div class=\"sub\">' + studentHeader + 'HK: ' + semHeader + ' | Phát hiện <b>' + courses.length + '</b> môn học</div>' + '</div>' + '<button class=\"btn-x\" id=\"hcmus-x\">✕</button>' + '</div>' + '<div class=\"bdy\">' + '<div class=\"grid\">' + '<div class=\"item\">' + '<label>📅 Thứ Hai tuần 1 (Bắt đầu kỳ):</label>' + '<input type=\"date\" id=\"hcmus-sdate\" value=\"' + defMon + '\">' + '</div>' + '<div class=\"item\">' + '<label>⏳ Số tuần học:</label>' + '<select id=\"hcmus-weeks\">' + '<option value=\"15\" selected>15 tuần (Chuẩn HK)</option>' + '<option value=\"16\">16 tuần</option>' + '<option value=\"10\">10 tuần (HK Hè)</option>' + '<option value=\"12\">12 tuần</option>' + '<option value=\"8\">8 tuần</option>' + '</select>' + '</div>' + '<div class=\"item\">' + '<label>🔔 Thông báo trước giờ học:</label>' + '<select id=\"hcmus-alarm\">' + '<option value=\"15\" selected>Trước 15 phút</option>' + '<option value=\"30\">Trước 30 phút</option>' + '<option value=\"60\">Trước 1 tiếng</option>' + '<option value=\"0\">Không thông báo</option>' + '</select>' + '</div>' + '</div>' + '<div class=\"tbl-w\">' + '<table>' + '<thead>' + '<tr>' + '<th style=\"width:32px; text-align:center;\"><input type=\"checkbox\" id=\"hcmus-all\" checked></th>' + '<th>Môn học</th>' + '<th style=\"width:75px;\">Lớp HP</th>' + '<th>Lịch Lý thuyết</th>' + '<th>Lịch Thực hành</th>' + '<th style=\"width:95px;\">Thêm nhanh</th>' + '</tr>' + '</thead>' + '<tbody>' + rowsHtml + '</tbody>' + '</table>' + '</div>' + '<div class=\"tip\">' + '<b>💡 Hướng dẫn nhập vào Google Calendar:</b>' + '<ol>' + '<li>Bấm <b>\"📥 Tải file .ICS\"</b> bên dưới để lưu file lịch về máy tính.</li>' + '<li>Bấm <b>\"🌐 Mở Google Calendar Import\"</b> (hoặc vào Google Calendar -> ⚙️ Cài đặt -> <b>Nhập & Xuất</b>).</li>' + '<li>Chọn file <code>.ics</code> vừa tải, chọn Calendar muốn thêm (nên tạo lịch riêng tên <i>TKB HK1</i>) rồi bấm <b>Nhập</b> là xong!</li>' + '</ol>' + '</div>' + '</div>' + '<div class=\"ftr\">' + '<div style=\"font-size:0.82rem; color:#64748b;\" id=\"hcmus-count\">Đang chọn: <b>' + courses.length + '/' + courses.length + '</b> môn</div>' + '<div class=\"actions\">' + '<button class=\"btn btn-sec\" id=\"hcmus-cp\">📋 Sao chép ICS</button>' + '<a class=\"btn btn-sec\" href=\"https://calendar.google.com/calendar/u/0/r/settings/export\" target=\"_blank\">🌐 Mở Google Calendar Import</a>' + '<button class=\"btn btn-pri\" id=\"hcmus-dl\">📥 Tải file .ICS (Khuyên dùng)</button>' + '</div>' + '</div>' + '</div>'; document.body.appendChild(modal); var close = function () { modal.remove(); }; var xBtn = modal.querySelector('#hcmus-x'); if (xBtn) xBtn.onclick = close; modal.onclick = function (e) { if (e.target === modal) close(); }; document.onkeydown = function (e) { if (e.key === 'Escape') close(); }; var chkAll = modal.querySelector('#hcmus-all'); var chks = Array.from(modal.querySelectorAll('.hcmus-chk')); var cnt = modal.querySelector('#hcmus-count'); function updateCnt() { var sel = courses.filter(function (c) { return c.selected; }).length; if (cnt) cnt.innerHTML = 'Đang chọn: <b>' + sel + '/' + courses.length + '</b> môn'; if (chkAll) chkAll.checked = sel === courses.length; } if (chkAll) { chkAll.onchange = function () { chks.forEach(function (c) { c.checked = chkAll.checked; var o = courses.find(function (x) { return x.id === c.getAttribute('data-id'); }); if (o) o.selected = chkAll.checked; }); updateCnt(); }; } chks.forEach(function (c) { c.onchange = function () { var o = courses.find(function (x) { return x.id === c.getAttribute('data-id'); }); if (o) o.selected = c.checked; updateCnt(); }; }); var sDateEl = modal.querySelector('#hcmus-sdate'); var weeksEl = modal.querySelector('#hcmus-weeks'); var alarmEl = modal.querySelector('#hcmus-alarm'); var getOpts = function () { return { start: (sDateEl && sDateEl.value) ? sDateEl.value : defMon, weeks: (weeksEl && weeksEl.value) ? (parseInt(weeksEl.value, 10) || 15) : 15, alarm: (alarmEl && alarmEl.value) ? (parseInt(alarmEl.value, 10) || 0) : 0 }; }; var dlBtn = modal.querySelector('#hcmus-dl'); if (dlBtn) { dlBtn.onclick = function () { var opts = getOpts(); var res = makeICS(courses, opts.start, opts.weeks, opts.alarm, student); if (res.count === 0) return alert('Vui lòng chọn ít nhất 1 môn có lịch học!'); var blob = new Blob([res.content], { type: 'text/calendar;charset=utf-8' }); var a = document.createElement('a'); var sId = (student && student.id) ? ('_' + student.id) : ''; var sem = (courses[0] && courses[0].sem) ? ('_HK' + courses[0].sem.replace(/[^a-zA-Z0-9]/g, '_')) : ''; a.href = URL.createObjectURL(blob); a.download = 'TKB_HCMUS' + sId + sem + '.ics'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); dlBtn.innerText = '✅ Đã tải xong!'; setTimeout(function () { dlBtn.innerText = '📥 Tải file .ICS (Khuyên dùng)'; }, 2000); }; } var cpBtn = modal.querySelector('#hcmus-cp'); if (cpBtn) { cpBtn.onclick = function () { var opts = getOpts(); var res = makeICS(courses, opts.start, opts.weeks, opts.alarm, student); navigator.clipboard.writeText(res.content).then(function () { cpBtn.innerText = '✅ Đã sao chép!'; setTimeout(function () { cpBtn.innerText = '📋 Sao chép ICS'; }, 2000); }); }; } modal.querySelectorAll('.hcmus-lnk').forEach(function (lnk) { lnk.onclick = function (e) { e.preventDefault(); var course = courses.find(function (x) { return x.id === lnk.getAttribute('data-cid'); }); if (!course) return; var isLT = lnk.getAttribute('data-tp') === 'LT'; var list = isLT ? course.lt : course.th; if (!list || !list[0]) return; var opts = getOpts(); var u = makeGCalUrl(course, Object.assign({}, list[0], { typeName: isLT ? 'Lý thuyết' : 'Thực hành', pfx: '[' + (isLT ? 'LT' : 'TH') + ']' }), opts.start, opts.weeks); window.open(u, '_blank'); }; }); })();";
+
+    document.getElementById("bm-link").href = bmUri;
+    document.getElementById("bm-code-box").textContent = bmCode;
+
+    var copyBtn = document.getElementById("btn-copy-bm");
+    copyBtn.onclick = function () {
+      navigator.clipboard.writeText(bmCode).then(function () {
+        copyBtn.innerHTML = "✅ Đã sao chép thành công!";
+        setTimeout(function () { copyBtn.innerHTML = "📋 Sao chép mã Bookmarklet"; }, 2500);
+      });
+    };
+
+    document.getElementById("btn-run-demo").onclick = function () {
+      var cleanCode = bmCode.replace(/^javascript:/, "");
+      try {
+        (new Function(cleanCode))();
+      } catch (e) {
+        console.error(e);
+        alert("Lỗi khi chạy demo: " + e.message);
+      }
+    };
+  </script>
+</body>
+
+</html>
