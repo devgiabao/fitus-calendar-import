@@ -13,17 +13,6 @@
 
 ---
 
-## 🧐 Vấn đề gặp phải
-
-Mỗi đầu học kỳ tại **Trường Đại học Khoa học Tự nhiên ĐHQG-HCM** (đặc biệt là Chương trình Đặc biệt / Đề án tại [portal.ctdb.hcmus.edu.vn](https://portal.ctdb.hcmus.edu.vn/sinh-vien/ket-qua-dkhp)):
-- Sinh viên đăng ký từ 4 đến 8 môn học.
-- Mỗi môn gồm cả **Lý thuyết (LT)** và **Thực hành (TH)** với khung giờ và thứ khác nhau.
-- Nếu nhập thủ công vào Google Calendar từng buổi trong 15 tuần học kỳ, bạn sẽ phải tạo hơn **120 sự kiện** thủ công – mất nhiều giờ và rất dễ nhầm lẫn phòng học hoặc khung giờ!
-
-👉 **HCMUS CTDB to Google Calendar** giải quyết triệt để vấn đề này trong **chưa đầy 30 giây**!
-
----
-
 ## ✨ Tính năng nổi bật
 
 - ⚡ **Tiện lợi 1-Click (Bookmarklet)**: Không cần cài tiện ích mở rộng (Extension), không cần cài đặt phần mềm bên ngoài. Chạy ngay trên thanh Bookmark của mọi trình duyệt (Chrome, Edge, Cốc Cốc, Firefox, Safari, Brave,...).
@@ -44,29 +33,6 @@ Mỗi đầu học kỳ tại **Trường Đại học Khoa học Tự nhiên Đ
 
 ---
 
-## 🖥️ Giao diện hoạt động (Preview)
-
-Khi nhấp vào Bookmarklet trên trang kết quả ĐKHP, một hộp thoại hiện đại sẽ xuất hiện:
-
-```text
-+------------------------------------------------------------------------------------+
-| 📅 Xuất Thời Khóa Biểu HCMUS sang Google Calendar                          [ ✕ ]   |
-| Sinh viên: 26127043 - LIÊN GIA BẢO | Học kỳ: 1/26-27 | Phát hiện 4 môn học          |
-+------------------------------------------------------------------------------------+
-| [📅 Thứ Hai tuần 1: 2026-09-28]  [⏳ Số tuần: 15 tuần ▾]  [🔔 Nhắc nhở: 15 phút ▾]  |
-+----+-----------------------------+--------+--------------------+-------------------+
-| [✓]| Môn học / Mã MH             | Lớp HP | Lịch Lý thuyết     | Lịch Thực hành    |
-+----+-----------------------------+--------+--------------------+-------------------+
-| [✓]| Nhập môn CNTT (CSC00004)    | 26C11  | 📘 T2 07:30-11:10  | 🔬 T3 09:30-11:30 |
-| [✓]| Cơ sở lập trình (CSC10012)  | 26C11  | 📘 T3 13:30-17:10  | 🔬 T6 15:30-17:30 |
-| [✓]| Kỹ năng mềm (CSC10121)      | 26C11  | 📘 T4 07:30-11:10  | 🔬 T6 13:30-15:30 |
-| [✓]| Toán rời rạc (MTH00009)     | 26C08  | 📘 T2 13:30-17:10  | 🔬 T4 13:30-15:30 |
-+----+-----------------------------+--------+--------------------+-------------------+
-| Đang chọn: 4/4 môn học               [📋 Sao chép] [🌐 Mở GCal] [📥 Tải file .ICS] |
-+------------------------------------------------------------------------------------+
-```
-
----
 
 ## 🚀 Hướng dẫn cài đặt
 
