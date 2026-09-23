@@ -77,7 +77,7 @@ Khi bấm vào Bookmarklet trên trang kết quả ĐKHP, một hộp thoại hi
 
 ### Cách 1: Kéo & Thả (Nhanh nhất - Khuyên dùng)
 
-1. Mở file `installer.html` trong trình duyệt.
+1. Mở link https://devgiabao.github.io/fitus-ggcalendar/.
 2. Nhấn `Ctrl + Shift + B` (hoặc `Cmd + Shift + B` trên Mac) để hiển thị thanh Bookmark của trình duyệt.
 3. **Nhấn giữ chuột vào nút màu xanh "📅 Xuất TKB HCMUS" và kéo thả vào thanh Bookmark**.
 
